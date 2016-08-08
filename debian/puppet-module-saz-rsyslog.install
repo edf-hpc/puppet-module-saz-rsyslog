@@ -1,0 +1,4 @@
+metadata.json usr/share/puppet/modules.available/saz-rsyslog
+manifests     usr/share/puppet/modules.available/saz-rsyslog
+templates     usr/share/puppet/modules.available/saz-rsyslog
+lib           usr/share/puppet/modules.available/saz-rsyslog
