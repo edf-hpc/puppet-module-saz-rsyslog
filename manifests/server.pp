@@ -8,8 +8,10 @@
 # [*enable_udp*]
 # [*enable_relp*]
 # [*enable_onefile*]
+# [*relay_server*]
 # [*server_dir*]
 # [*custom_config*]
+# [*content*]
 # [*port*]
 # [*relp_port*]
 # [*address*]
@@ -18,6 +20,7 @@
 # [*ssl_cert*]
 # [*ssl_key*]
 # [*log_templates*]
+# [*log_filters*]
 # [*actionfiletemplate*]
 # [*rotate*]
 #
@@ -40,8 +43,10 @@ class rsyslog::server (
   $enable_udp                = true,
   $enable_relp               = true,
   $enable_onefile            = false,
+  $relay_server              = false,
   $server_dir                = '/srv/log/',
   $custom_config             = undef,
+  $content                   = undef,
   $port                      = '514',
   $relp_port                 = '20514',
   $address                   = '*',
@@ -50,9 +55,11 @@ class rsyslog::server (
   $ssl_cert                  = undef,
   $ssl_key                   = undef,
   $log_templates             = false,
+  $log_filters               = false,
   $actionfiletemplate        = false,
   $rotate                    = undef
-) inherits rsyslog {
+) inherits rsyslog::params {
+  include ::rsyslog
 
   ### Logrotate policy
   $logpath = $rotate ? {
@@ -65,13 +72,18 @@ class rsyslog::server (
     default  => '/',
   }
 
-  if $custom_config {
+  if $content {
+    if $custom_config {
+      fail '$content and $custom_config are mutually exclusive'
+    }
+    $real_content = $content
+  } elsif $custom_config {
     $real_content = template($custom_config)
   } else {
     $real_content = template("${module_name}/server-default.conf.erb")
   }
 
-  rsyslog::snippet { $rsyslog::server_conf:
+  rsyslog::snippet { '00_server':
     ensure  => present,
     content => $real_content,
   }

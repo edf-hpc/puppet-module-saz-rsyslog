@@ -11,7 +11,8 @@ or send some bitcoins to ```1Na3YFUmdxKxJLiuRXQYJU2kiNqA3KY2j9```
 
 ## REQUIREMENTS
 
-* Puppet >=2.7
+* Puppet >= 3.0
+* Starting with release 4.0.0 Puppet < 3.0 is not tested anymore
 
 ## Supported platforms
 * Debian-based distributions
@@ -38,6 +39,7 @@ or send some bitcoins to ```1Na3YFUmdxKxJLiuRXQYJU2kiNqA3KY2j9```
     remote_type               => 'tcp',
     remote_forward_format     => 'RSYSLOG_ForwardFormat',
     log_local                 => false,
+    log_local_custom          => undef,
     log_auth_local            => false,
     listen_localhost          => false,
     split_config              => false,
@@ -50,10 +52,12 @@ or send some bitcoins to ```1Na3YFUmdxKxJLiuRXQYJU2kiNqA3KY2j9```
     ssl_permitted_peer        => undef,
     ssl_auth_mode             => 'anon',
     log_templates             => false,
+    log_filters               => false,
     actionfiletemplate        => false,
     high_precision_timestamps => false,
     rate_limit_burst          => undef,
-    rate_limit_interval       => undef
+    rate_limit_interval       => undef,
+    imfiles                   => undef
   }
 ```
 for read from file
@@ -153,17 +157,20 @@ Declare the following to configure the connection:
     enable_udp                => true,
     enable_relp               => true,
     enable_onefile            => false,
+    relay_server              => false,
     server_dir                => '/srv/log/',
     custom_config             => undef,
+    content                   => undef,
     port                      => '514',
     relp_port                 => '20514',
     address                   => '*',
     high_precision_timestamps => false,
-    log_templates             => false,
-    actionfiletemplate        => false,
     ssl_ca                    => undef,
     ssl_cert                  => undef,
     ssl_key                   => undef,
+    log_templates             => false,
+    log_filters               => false,
+    actionfiletemplate        => false,
     rotate                    => undef
   }
 ```
@@ -181,6 +188,7 @@ The following lists all the class parameters this module accepts.
     omit_local_logging                  true,false          Turn off message reception via local log socket. Defaults to true only for RedHat 7+ and false elsewhere.
     preserve_fqdn                       true,false          Use full name of host even if sender and receiver are in the same domain. Defaults to false.
     local_host_name                     STRING              Use a custom local host name, instead of clients actual host name. Defaults to undef.
+    package_status                      STRING              Manages rsyslog package installation. Defaults to 'present'.
 
     RSYSLOG::SERVER CLASS PARAMETERS    VALUES              DESCRIPTION
     -------------------------------------------------------------------
@@ -188,19 +196,21 @@ The following lists all the class parameters this module accepts.
     enable_udp                          true,false          Enable UDP listener. Defaults to true.
     enable_relp                         true,false          Enable RELP listener. Defaults to true.
     enable_onefile                      true,false          Only one logfile per remote host. Defaults to false.
+    relay_server                        true,false          If the server should be able to relay the received logs to another server. The rsyslog::client must also be set up. Defaults to false.
     server_dir                          STRING              Folder where logs will be stored on the server. Defaults to '/srv/log/'
     custom_config                       STRING              Specify your own template to use for server config. Defaults to undef. Example usage: custom_config => 'rsyslog/my_config.erb'
+    content                             STRING              Specify the content of the server config, instead of using a template. Defaults to undef.
     port                                STRING/INTEGER      Port to listen on for messages via UDP and TCP. Defaults to 514
     relp_port                           STRING/INTEGER      Port to listen on for messages via RELP. Defaults to 20514
     address                             STRING              The IP address to bind to. Applies to UDP listener only. Defaults to '*'.
-
-    log_templates                       HASH                Provides a has defining custom logging templates using the `$template` configuration parameter.
-    actionfiletemplate                  STRING              If set this defines the `ActionFileDefaultTemplate` which sets the default logging format for remote and local logging.
-    high_precision_timestamps           true,false          Whether or not to use high precision timestamps.
-    ssl_ca                              STRING              Path to SSL CA certificate
-    ssl_cert                            STRING              Path to SSL certificate
-    ssl_key                             STRING              Path to SSL private key
-    rotate                              TODO                TODO
+    high_precision_timestamps           true,false          Whether or not to use high precision timestamps. Defaults to false.
+    ssl_ca                              STRING              Path to SSL CA certificate. Defaults to undef.
+    ssl_cert                            STRING              Path to SSL certificate. Defaults to undef.
+    ssl_key                             STRING              Path to SSL private key. Defaults to undef.
+    log_templates                       HASH                Provides a hash defining custom logging templates using the `$template` configuration parameter. Defaults to false.
+    log_filters                         HASH                Provides a hash defining custom logging filters using the `if/then` configurations parameter. Defaults to false.
+    actionfiletemplate                  STRING              If set this defines the `ActionFileDefaultTemplate` which sets the default logging format for remote and local logging. Defaults to false.
+    rotate                              STRING              Enables rotation of logfiles. Valid values: year, month, day. Defaults to undef.
 
     RSYSLOG::CLIENT CLASS PARAMETERS    VALUES              DESCRIPTION
     -------------------------------------------------------------------
@@ -220,6 +230,7 @@ The following lists all the class parameters this module accepts.
     ssl_permitted_peer                  STRING              List of permitted peers. Defaults to undef.
     ssl_auth_mode                       STRING              SSL auth mode. Defaults to anon.
     log_templates                       HASH                Provides a has defining custom logging templates using the `$template` configuration parameter.
+    log_filters                         HASH                Provides a has defining custom logging filters using the `if/then` configurations parameter.
     actionfiletemplate                  STRING              If set this defines the `ActionFileDefaultTemplate` which sets the default logging format for remote and local logging.
     high_precision_timestamps           true,false          Whether or not to use high precision timestamps.
     rate_limit_burst                    INTEGER             Specifies the number of messages in $rate_limit_interval before limiting begins. Defaults to undef.
@@ -251,3 +262,6 @@ manage the respective package:
 
 This can be used when using the adiscon PPA repository, that has merged rsyslog-gnutls
 with the main rsyslog package.
+
+Default package_status parameter for rsyslog class used to be 'latest'. However, it was
+against puppet best practices so it defaults to 'present' now.

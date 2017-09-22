@@ -9,7 +9,7 @@ $ModLoad imtcp
 <% end -%>
 
 <% if scope.lookupvar('rsyslog::server::enable_relp') -%>
-<% if (scope.function_versioncmp([@rsyslog_version, '6.3.6']) >= 0) -%>
+<% if (@rsyslog_version and (scope.function_versioncmp([@rsyslog_version, '6.3.6']) >= 0)) -%>
 # Load RELP module
 $ModLoad imrelp
 <% end -%>
@@ -20,6 +20,13 @@ $ModLoad imrelp
 # Define custom logging templates
 <% scope.lookupvar('rsyslog::server::log_templates').flatten.compact.each do |log_template| -%>
 $template <%= log_template['name'] %>,"<%= log_template['template'] %>"
+<% end -%>
+<% end -%>
+<% if scope.lookupvar('rsyslog::server::log_filters') -%>
+
+# Define custom if/then log conditions
+<% scope.lookupvar('rsyslog::server::log_filters').each do |log_filter| -%>
+if <%= log_filter['expression'] %> then <%= log_filter['action'] %>
 <% end -%>
 <% end -%>
 <% if scope.lookupvar('rsyslog::server::actionfiletemplate') -%>
@@ -54,5 +61,7 @@ $InputTCPServerStreamDriverMode 1
 $InputTCPServerStreamDriverAuthMode anon
 <% end -%>
 
+<% if scope.lookupvar('rsyslog::server::relay_server') == false -%>
 # Switch to remote ruleset
 $RuleSet remote
+<% end -%>

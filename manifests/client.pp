@@ -1,6 +1,6 @@
 # == Class: rsyslog::client
 #
-# Full description of class role here.
+# Manages rsyslog as client
 #
 # === Parameters
 #
@@ -10,8 +10,10 @@
 # [*remote_type*]
 # [*remote_forward_format*]
 # [*log_local*]
+# [*log_local_custom*]
 # [*log_auth_local*]
 # [*listen_localhost*]
+# [*split_config*]
 # [*custom_config*]
 # [*custom_params*]
 # [*server*]
@@ -19,11 +21,14 @@
 # [*remote_servers*]
 # [*ssl_ca*]
 # [*ssl_permitted_peer*]
-# [*ssl_
+# [*ssl_auth_mode*]
 # [*log_templates*]
+# [*log_filters*]
 # [*actionfiletemplate*]
+# [*high_precision_timestamps*]
 # [*rate_limit_burst*]
 # [*rate_limit_interval*]
+# [*imfiles*]
 #
 # === Variables
 #
@@ -38,6 +43,7 @@ class rsyslog::client (
   $remote_type               = 'tcp',
   $remote_forward_format     = 'RSYSLOG_ForwardFormat',
   $log_local                 = false,
+  $log_local_custom          = undef,
   $log_auth_local            = false,
   $listen_localhost          = false,
   $split_config              = false,
@@ -50,11 +56,14 @@ class rsyslog::client (
   $ssl_permitted_peer        = undef,
   $ssl_auth_mode             = 'anon',
   $log_templates             = false,
+  $log_filters               = false,
   $actionfiletemplate        = false,
   $high_precision_timestamps = false,
   $rate_limit_burst          = undef,
-  $rate_limit_interval       = undef
-) inherits rsyslog {
+  $rate_limit_interval       = undef,
+  $imfiles                   = undef
+) inherits rsyslog::params {
+  include ::rsyslog
 
   if $custom_config {
     $content_real = template($custom_config)
@@ -69,7 +78,7 @@ class rsyslog::client (
   }
 
   if $content_real {
-    rsyslog::snippet { $rsyslog::client_conf:
+    rsyslog::snippet { '00_client':
       ensure  => present,
       content => $content_real,
     }
@@ -86,17 +95,17 @@ class rsyslog::client (
       $_local_ensure = 'absent'
     }
 
-    rsyslog::snippet { "00_${rsyslog::client_conf}_config":
+    rsyslog::snippet { '00_client_config':
       ensure  => present,
       content => template("${module_name}/client/config.conf.erb"),
     }
 
-    rsyslog::snippet { "50_${rsyslog::client_conf}_remote":
+    rsyslog::snippet { '50_client_remote':
       ensure  => $_remote_ensure,
       content => template("${module_name}/client/remote.conf.erb"),
     }
 
-    rsyslog::snippet { "99_${rsyslog::client_conf}_local":
+    rsyslog::snippet { '99_client_local':
       ensure  => $_local_ensure,
       content => template("${module_name}/client/local.conf.erb"),
     }
@@ -111,11 +120,15 @@ class rsyslog::client (
   }
 
   if $ssl_auth_mode != 'anon' and $rsyslog::ssl == false {
-    fail("You need to enable SSL in order to use ssl_auth_mode.")
+    fail('You need to enable SSL in order to use ssl_auth_mode.')
   }
 
   if $ssl_permitted_peer and $ssl_auth_mode != 'x509/name' {
-    fail("You need to set auth_mode to 'x509/name' in order to use ssl_permitted_peers.")
+    fail('You need to set auth_mode to \'x509/name\' in order to use ssl_permitted_peers.')
+  }
+
+  if $imfiles {
+    create_resources(rsyslog::imfile, $imfiles)
   }
 
 }
