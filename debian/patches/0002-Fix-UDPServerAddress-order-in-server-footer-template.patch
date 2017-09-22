@@ -1,0 +1,23 @@
+From: Thomas HAMEL <thomas-externe.hamel@edf.fr>
+Date: Fri, 22 Sep 2017 16:57:59 +0200
+Subject: Fix UDPServerAddress order in server footer template
+
+To be effective, the option must precede the Run option.
+---
+ templates/server/_default-footer.conf.erb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/templates/server/_default-footer.conf.erb b/templates/server/_default-footer.conf.erb
+index 448645e..d667e01 100644
+--- a/templates/server/_default-footer.conf.erb
++++ b/templates/server/_default-footer.conf.erb
+@@ -4,8 +4,8 @@ $RuleSet RSYSLOG_DefaultRuleset
+ 
+ <% if scope.lookupvar('rsyslog::server::enable_udp') -%>
+ $InputUDPServerBindRuleset remote
+-$UDPServerRun <%= scope.lookupvar('rsyslog::server::port') %>
+ $UDPServerAddress <%= scope.lookupvar('rsyslog::server::address') %>
++$UDPServerRun <%= scope.lookupvar('rsyslog::server::port') %>
+ <% end -%>
+ 
+ <% if scope.lookupvar('rsyslog::server::enable_tcp') -%>

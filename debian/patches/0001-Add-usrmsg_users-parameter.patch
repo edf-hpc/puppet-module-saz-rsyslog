@@ -1,0 +1,81 @@
+From: Thomas HAMEL <thomas-externe.hamel@edf.fr>
+Date: Fri, 22 Sep 2017 14:56:39 +0200
+Subject: Add usrmsg_users parameter
+
+By default the emergency messages are sent to all logged in users
+on the machine. rsyslog as a parameter to restrict these message
+to a list of user. This new parameter permits to set this list
+(to only root for instance). By default the parameter uses "*" (
+all users) which was the previously hard coded value).
+---
+ README.md                       | 1 +
+ manifests/init.pp               | 3 ++-
+ manifests/params.pp             | 1 +
+ templates/client/local.conf.erb | 2 +-
+ templates/rsyslog.conf.erb      | 2 +-
+ 5 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/README.md b/README.md
+index b871e6d..e0ddaf6 100644
+--- a/README.md
++++ b/README.md
+@@ -189,6 +189,7 @@ The following lists all the class parameters this module accepts.
+     preserve_fqdn                       true,false          Use full name of host even if sender and receiver are in the same domain. Defaults to false.
+     local_host_name                     STRING              Use a custom local host name, instead of clients actual host name. Defaults to undef.
+     package_status                      STRING              Manages rsyslog package installation. Defaults to 'present'.
++    usrmsg_users                        Array               Array of user names that will receive messages when logged, Defaults to ['*'] (all users)
+ 
+     RSYSLOG::SERVER CLASS PARAMETERS    VALUES              DESCRIPTION
+     -------------------------------------------------------------------
+diff --git a/manifests/init.pp b/manifests/init.pp
+index 5d6b9dd..11f0787 100644
+--- a/manifests/init.pp
++++ b/manifests/init.pp
+@@ -50,7 +50,8 @@ class rsyslog (
+   $im_journal_ratelimit_interval       = $rsyslog::params::im_journal_ratelimit_interval,
+   $im_journal_statefile                = $rsyslog::params::im_journal_statefile,
+   $im_journal_ratelimit_burst          = $rsyslog::params::im_journal_ratelimit_burst,
+-  $im_journal_ignore_previous_messages = $rsyslog::params::im_journal_ignore_previous_messages
++  $im_journal_ignore_previous_messages = $rsyslog::params::im_journal_ignore_previous_messages,
++  $usrmsg_users                        = $rsyslog::params::usrmsg_users
+ ) inherits rsyslog::params {
+   class { '::rsyslog::install': }
+   class { '::rsyslog::config': }
+diff --git a/manifests/params.pp b/manifests/params.pp
+index d36e291..90ed954 100644
+--- a/manifests/params.pp
++++ b/manifests/params.pp
+@@ -22,6 +22,7 @@ class rsyslog::params {
+   $msg_reduction                  = false
+   $non_kernel_facility            = false
+   $preserve_fqdn                  = false
++  $usrmsg_users                   = ['*']
+ 
+   case $::osfamily {
+     'Debian': {
+diff --git a/templates/client/local.conf.erb b/templates/client/local.conf.erb
+index 01dceb2..b8dea36 100644
+--- a/templates/client/local.conf.erb
++++ b/templates/client/local.conf.erb
+@@ -101,7 +101,7 @@ cron.*                                          /var/log/cron
+ *.=debug                                        /var/log/debug.log
+ <% end -%>
+ <% if @rsyslog_version and @rsyslog_version.split('.')[0].to_i >= 7 -%>
+-*.emerg       :omusrmsg:*
++*.emerg       :omusrmsg:<%= scope.lookupvar('rsyslog::usrmsg_users').join(',') %>
+ <% else -%>
+ *.emerg				*
+ <% end -%>
+diff --git a/templates/rsyslog.conf.erb b/templates/rsyslog.conf.erb
+index 5da8c8a..de645d9 100644
+--- a/templates/rsyslog.conf.erb
++++ b/templates/rsyslog.conf.erb
+@@ -90,7 +90,7 @@ $IncludeConfig <%= scope.lookupvar('rsyslog::rsyslog_d') -%>*.conf
+ # Emergencies are sent to everybody logged in.
+ #
+ <% if @rsyslog_version and @rsyslog_version.split('.')[0].to_i >= 7 -%>
+-*.emerg	:omusrmsg:*
++*.emerg	:omusrmsg:<%= scope.lookupvar('rsyslog::usrmsg_users').join(',') %>
+ <% else -%>
+ *.emerg	*
+ <% end -%>
