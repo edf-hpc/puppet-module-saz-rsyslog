@@ -1,3 +1,632 @@
+puppet-module-saz-rsyslog (5.0.0-1scibian1~bpo8+1) calibre9; urgency=medium
+
+  [ Saz ]
+  * initial import
+  * Fixed typo in package_name
+  * Added README.md and server.pp
+  * switched to high-precision log format
+  * changes for release on forge.puppetlabs.com
+  * README updates
+  * add option for logging on a client all or auth log only, alternate config template
+  * require class rsyslog::config, change ensure from file to present
+  * change ensure from file to present, add custom_config parameter, switch rsyslog::server to parameterized class
+  * use template for rsyslog.conf instead of file source
+  * add configuration for local logging, use variable lookup where possible
+  * make high precision timestamps configurable, use variable lookup where possible, prepare for option to drop privileges to different user
+  * internal variables, fully-qualified variable lookup for operatingsystem, high_precision_timestamp default settings
+  * udp/tcp can be switched on or off, no newline after variables
+  * increment version number.
+  * use $rsyslog_high_precision_timestamps as default value to allow user to set variable to true and false
+  * use high-precision timestamps on log server if enabled
+  * use ForwardFormat for remote logging, switch back to TraditionalFileFormat on local logging
+  * README updated
+  * TCP configuration wrong, must be "$InputTCPServerRun"
+  * new version 1.1.1
+  * Use TCP instead of RELP, as InputRELPServerBindRuleset requires version 6.3.6+, disable remote logging completely, switch between TCP and UDP logging
+  * Use different ruleset for remote logging via TCP and UDP (RELP requires version 6.3.6+ of rsyslog)
+  * New version 1.1.2
+  * remove loading of omtcp/omudp as those modules do not exist
+  * README updates I've missed in the last versions
+
+  [ Ryan Coleman ]
+  * Add parameters table to README
+  * Add requirements to README + other cleanup
+
+  [ Steffen Zieger ]
+  * remove metadata.json
+  * add definition for imfile configuration
+  * style-guide changes, fail on unsupported platform
+  * function name is template, not content
+  * fix file content line
+
+  [ William Hopper ]
+  * Updating formatting to meet Puppet Labs best practices
+
+  [ Will Hopper ]
+  * Adding support for FreeBSD
+
+  [ Steffen Zieger ]
+  * set log template for remote logging explicitly
+
+  [ Anton Lindström ]
+  * add port option to rsyslog::client
+
+  [ Steffen Zieger ]
+  * style-guide fixes
+  * new version 1.1.4
+
+  [ Ralf Heiringhoff ]
+  * added Red Hat, CentOS, Fedora support; File/Dir permissions now in params.pp
+  * Added one logfile per remote host
+  * Add Disk Spool Size Queueing Params
+  * corrected typo
+  * doh!, typo fix #2
+
+  [ Steffen Zieger ]
+  * fix freebsd package name
+  * reset rsyslog package name on freebsd
+
+  [ Ralf Heiringhoff ]
+  * merged changes with upstream:saz/puppet-rsyslog
+
+  [ Steffen Zieger ]
+  * use full package name on freebsd (required by "ports" provider)
+  * add define to add arbitrary snippets in rsyslog conf dir
+  * append .conf to snippet file name, append newline to snippet content
+
+  [ Ben Webber ]
+  * Added MySQL and PostgreSQL backends. Databases need to be deployed separately.
+  * Added database configuration to README.
+
+  [ Jonathan Thurman ]
+  * Create spec tests for all classes/defines and perform most cleanup recommended by puppet-lint
+
+  [ Steffen Zieger ]
+  * add travis config file
+  * some style guide changes
+  * add gemfile
+  * add puppet-lint to gemfile
+  * remove trailing comma
+  * Add travis-ci build status to README
+
+  [ Pedro González Serrano ]
+  * Update manifests/server.pp
+  * Why $rsyslog::params::rsyslog_d gets purged?
+
+  [ John Knoll ]
+  * Update manifests/config.pp
+  * Update manifests/config.pp
+  * Update manifests/params.pp
+
+  [ Steffen Zieger ]
+  * remove trailing slash fixes #17
+  * whitespace consistency fixes #18
+  * Version 2.0.0
+
+  [ bob ]
+  * Update README.md
+
+  [ Steffen Zieger ]
+  * add module summary
+
+  [ Johan van den Dorpe ]
+  * refactor tests to reduce duplication
+  * Rename server.conf.erb to server-default.conf.erb and create _default partial templates
+  * Change default template to server-default.conf.erb
+  * Update tests to check content of server.conf
+  * Add server-hostname template and tests
+  * Update documentation to explain default behaviour of rsyslog::server and suggest alternative
+
+  [ Hunter Haugen ]
+  * Add `custom_params` to `rsyslog::client` for custom templates
+
+  [ Johan van den Dorpe ]
+  * Rename $InputFilePollingInterval to $InputFilePollInterval
+
+  [ Mathieu Bornoz ]
+  * rsyslog: make all module params configurable
+  * use rsyslog::snippet for client and server configs
+  * Create log directories with same ownership as files
+  * it doesn't make sense to test classes that are never included directly
+  * added a default site.pp (require to test defined type) + adapt. .gitignore
+  * travis: small improvements
+  * Gemfile: upgraded gem puppetlabs_spec_helper + cosmetics
+  * Gemfile instead of .gemfile
+
+  [ dima ]
+  * read from file description
+
+  [ Philip Potter ]
+  * Expose purge_rsyslog_d as a parameter
+
+  [ mark hellewell ]
+  * added trailing slash to rsyslog::server's $server_dir default
+
+  [ cstackpole ]
+  * Updating params to support EL5 packages.
+
+  [ Steffen Zieger ]
+  * ignore fixtures dir
+  * add ghpublisher to travis config
+  * exclude some puppet and rvm versions on travis
+  * fix travis.yml file
+  * update .gemfile
+  * add puppet-lint
+  * include rsyslog from rsyslog::imfile
+  * remove trailing comma
+  * fix variables in templates
+  * fix exclude list in travis.yml
+  * clean up travis.yml file
+  * another try of getting matrix exclude on travis to work
+  * add puppet version 3.2
+  * another try...
+  * add LICENSE file
+  * update module version for new puppet forge release
+  * fix indentation
+  * fix tests
+  * clean up README
+  * clean up README
+
+  [ Christian Kaenzig ]
+  * Make rsyslog server port configurable
+
+  [ Mathieu Bornoz ]
+  * rsyslog: trailing slashes removed for
+  * SSL support
+
+  [ Adam Stephens ]
+  * el5 needs rsyslog5
+
+  [ Jan Örnstedt ]
+  * Made modules in rsyslog.conf configurable via parameter $modules.
+
+  [ Steffen Zieger ]
+  * remove trailing comma
+  * add initial gentoo support
+  * update module version to 2.1.0
+  * fix rsyslog default config file
+  * fix run_user and run_group
+  * update module to version 2.2.0
+
+  [ Jan Örnstedt ]
+  * Need to specificly define high precision time format incase of using both client and server config on same rsyslog instance.
+
+  [ Max Griffiths ]
+  * use @ global variable in erb
+
+  [ Adam Stephens ]
+  * update rsyslog plugins to use rsyslog5 packages on el5
+
+  [ Aaron Hicks ]
+  * Preserve FQDN parameter
+
+  [ Raphaël Pinson ]
+  * Revert "fix run_user and run_group"
+  * Revert "add initial gentoo support"
+  * Add gentoo back
+  * Add back rsyslog::rsyslog_default_file
+  * Use operatingsystem for gentoo
+
+  [ Adam Stephens ]
+  * dropping to uid and gid hangs rsyslog on el5
+
+  [ Steffen Zieger ]
+  * Update module version to 2.2.1
+
+  [ Aaron Hicks ]
+  * new parameter rsyslog::client parameter, actionfiletemplate, which sets the default logging format for remote and local logging.
+  * configuring mulitple remote servers from the remote_servers parameter using a hash.
+
+  [ Kim-Andre Johansen ]
+  * moved client parameter from server to client
+
+  [ Aaron Hicks ]
+  * Define log templates with $template
+  * Remove some generic logging configuration from inside the local logging block to expose them when setting up remote logging.
+
+  [ Steffen Zieger ]
+  * new release v2.3.0
+
+  [ Jan Örnstedt ]
+  * Added logrotation based on date.
+
+  [ Derek Tamsen ]
+  * Using $rsyslog::client_conf var to generate rsyslog::client file name
+  * Using $rsyslog::server_conf var for server config file name
+
+  [ Maciej Strzelecki ]
+  * PreserveFQDN as first directive in rsyslog.conf
+
+  [ Dougal Scott ]
+  * Handle Amazon Linux
+
+  [ Mickaël Canévet ]
+  * Set default for $purge_rsyslog_d on RedHat (required when strict_variables is on)
+
+  [ Dougal Scott ]
+  * Amazon doesn't have rsyslog-relp
+
+  [ Steffen Zieger ]
+  * new release v2.4.0
+
+  [ Jan Örnstedt ]
+  * Remove trailing ",".
+
+  [ Maciej Strzelecki ]
+  * remove preserve_fqdn from rsyslog::client
+  * preserve_fqdn in rsyslog class
+  * update README
+  * preserve_fqdn in rsyslog namespace
+  * fix typo in variables list
+
+  [ Steffen Zieger ]
+  * add puppet version 3.5.1
+  * add operatingsystem_support to metadata.json
+  * new release v3.0.0
+  * fix metadata.json
+
+  [ Mickaël Canévet ]
+  * Add strict variables tests
+  * Fix unit tests
+  * Add missing defaults
+
+  [ Steffen Zieger ]
+  * add hasstatus and hasrestart to service
+  * new release v3.1.0
+
+  [ Chris Trotman ]
+  * imfile: Add the persist_state_interval option
+
+  [ Frank Kloeker ]
+  * add params for SLES
+
+  [ Steffen Zieger ]
+  * fix modules variable scope in rsyslog.conf template, refs #78 and #74
+  * change custom_config handling in rsyslog::server, refs #78 and #74
+  * change custom_config handling in rsyslog::client, refs #78 and #74
+
+  [ Mickaël Canévet ]
+  * Auto enable strict_variables for unit tests when puppet > 3.5
+
+  [ Steffen Zieger ]
+  * remove trailing commas
+
+  [ Casey Feskens ]
+  * add support for RHEL 7
+
+  [ Steffen Zieger ]
+  * new release v3.2.0
+
+  [ Yasser Nabi ]
+  * Add parameter 'v8plus' for rsyslog version 8+
+
+  [ Steffen Zieger ]
+  * ignore .DS_Store files
+  * add parameter for setting the remote forward format, fixes #46
+  * add fact for rsyslog version from pr #50, refs #87
+
+  [ Yasser Nabi ]
+  * Add parameter 'v8plus' for rsyslog version 8+
+  * Use fact for rsyslog version instead of param
+  * Revert "Add parameter 'v8plus' for rsyslog version 8+"
+  * Update spec tests to support rsyslog_version fact
+  * Issue #84: Document *_package_name usage
+
+  [ Trey Dockendorf ]
+  * * Fix error in template if rsyslog_version fact is not present
+
+  [ Krakowitzer, Merritt ]
+  * Fix Issue #92 setting the perm_file => '0640', and  perm_dir => '0750', params do not take effect. As they are overridden by the umask of the the rsyslog process. This is typically set by RHEL rsyslog init script. This can be resolved by setting the $Umask paramater to 0000.
+
+  [ Thomas Weißschuh ]
+  * fix suse support
+
+  [ Christian Kaenzig ]
+  * set spool_dir seltype to syslogd_var_lib_t
+
+  [ Steffen Zieger ]
+  * add max_message_size parameter
+
+  [ James Edwards ]
+  * Allow option to avoid loading imfile module twice.
+  * Fixing merge typos.
+
+  [ Steffen Zieger ]
+  * module is compatible with puppet enterprise v3.3, fixes #94
+  * new release v3.3.0
+  * fix bug in README
+  * fix some lint warnings, fixes #100
+
+  [ James Edwards ]
+  * Refactor common params.
+
+  [ Steffen Zieger ]
+  * set umask only on systems where it is required
+  * new release v3.4.0
+
+  [ Micah Anderson ]
+  * Move default file to template to take advantage of rsyslog_version fact and different flags available pre version 7 - Fixes #61
+
+  [ Elisiano Petrini ]
+  * moved $PreserveFQDN at the top
+
+  [ Robin Kearney ]
+  * Added support for RHEL/CentOS 5
+
+  [ Bruno Léon ]
+  * Fix Ubuntu run rsyslog as syslog/adm not root
+  * Set $rsyslog::spool_dir owner to be $rsyslog::run_user
+
+  [ Jonathan Davies ]
+  * Added server side configuration for RELP support.
+  * Added RELP client support.
+  * client.conf.erb: Added missing control statements.
+  * README.md: Tweaked for RELP updates.
+  * client.conf.erb: Catch RELP for remote_servers too.
+  * client.conf.erb: Catch RELP default port for remote_servers.
+  * client.conf.erb: Make this easier to look at.
+  * server/_default-footer: Allow changing of the RELP server port.
+  * Added support for collection of auditd logs.
+  * Implemented high_precision_timestamps setting for client logs.
+  * client.pp: Inverted incorrect comma location.
+
+  [ Steffen Zieger ]
+  * Fix rsyslog::server parameter documentation
+
+  [ Joshua Spence ]
+  * Add `ensure` parameter to `rsyslog::imfile`
+
+  [ Jonathan Davies ]
+  * client.conf: Be sure to load omrelp if needed.
+  * client.conf: Only load omrelp once if needed.
+  * client.conf: Placed comment within if section.
+  * client.conf: Corrected if statement.
+
+  [ Jason Clark ]
+  * Add ActionQueueTimeoutEnqueue option
+
+  [ Klavs Klavsen ]
+  * allow optional udp syslog reception on localhost for rsyslog::client
+
+  [ Casey Feskens ]
+  * Implemented rsyslog rate limiting settings for clients
+
+  [ Trey Dockendorf ]
+  * * Notify the rsyslog service when changes occur to managed packages - useful when using default ensure "latest" and updates are applied
+
+  [ Bruno Léon ]
+  * feat (server): add a parameter to specify ListenAddress for UDP input.
+
+  [ Trey Dockendorf ]
+  * * Fix failing unit tests that were needing operatingsystem fact set
+
+  [ b4ldr ]
+  * Add a few small fixes and some extra options
+
+  [ Steven Dickenson ]
+  * Support dropaction option for remote servers
+
+  [ Thomas Lapinski ]
+  * Replaced version comparision conditionals with versioncmp function to work with future parser. This includes updating tests to set version facts to strings which is what facter returns. Fixes issue #136.
+
+  [ Michael Crumm ]
+  * Add :operatingsystem fact for specs failing on puppet > 3.4
+
+  [ Steffen Zieger ]
+  * fix spec test facts
+  * add missing trailing comma
+
+  [ saz ]
+  * fix rate limit check
+  * fix rate limit variables for real this time
+
+  [ Steffen Zieger ]
+  * remove many variable scope lookups in templates
+  * make relp server port configurable
+
+  [ Andrew Cowan ]
+  * Adding ReadMode support to imfile template. This allows line (default), paragraph and indented message modes.
+
+  [ Garhan Attebury ]
+  * fixed two missing @ for variable access in client template
+
+  [ Mike Marseglia ]
+  * performing string comparison in ruby template is case sensitive. switching to string casecmp function to make a case insensitive match.
+
+  [ Steffen Zieger ]
+  * use rsyslog::snippet everywhere, fix file owner and group, fixes #112, #121
+  * inherit class rsyslog
+
+  [ Garhan Attebury ]
+  * Added OmitLocalLogging for EL7 config. Defaults to false everywhere else.
+  * removed trailing comma from init.pp, added msg_reduction, non_kernel_facility, omit_local_logging, preserve_fqdn paramaters to README.md
+
+  [ Steffen Zieger ]
+  * fix database snippet name
+  * gitignore more files
+  * fix imfile snippet name
+  * fix rsyslog::snippet parameters
+  * update README
+  * pin rspec to < 3.2.0 on ruby 1.8
+
+  [ Rafael Dantas Justo ]
+  * Allow to set a custom log template also in server. Until today it was only possible to change the variables $template and $ActionFileDefaultTemplate in the client side. The server was restricted to the log templates RSYSLOG_TraditionalFileFormat and RSYSLOG_FileFormat.
+
+  [ Trey Dockendorf ]
+  * Allow the client configuration to be split into 00_client_config.conf, 50_client_remote.conf and 99_client_local.conf if split_config is true, issue #108
+
+  [ Steffen Zieger ]
+  * add option for ssl auth mode configuration and permitted peer list, fixes #140
+  * rename .gemfile to Gemfile
+  * add puppet 4 support, fixes #155
+  * update travis build matrix
+  * do not test on 1.8.7 with puppet 4
+  * validate ssl_auth_mode and ssl_permitted_peer, refs #143
+  * fix mixed line endings in README
+  * add local host name parameter, refs #143
+  * add donate section
+  * fix README
+  * try to fix spec tests on 1.8.7
+  * fix local host name config entry
+  * check local_host_name for undefined
+  * check for rsyslog version 7 or greater
+  * new release v3.5.0
+
+  [ eholzbach ]
+  * fixed packages for FreeBSD
+
+  [ Steffen Zieger ]
+  * check if variables are defined
+  * new release v3.5.1
+
+  [ eholzbach ]
+  * update local logging to match FreeBSD defaults
+
+  [ muresan ]
+  * Update params.pp
+
+  [ Theo Chatzimichos ]
+  * Add /etc/sysconfig/syslog file for SLES and openSUSE
+
+  [ Raphaël Pinson ]
+  * Add a $content parameter to pass content instead of template
+
+  [ Steffen Zieger ]
+  * fix rsyslog_version fact, if package is on hold
+
+  [ Lucas Clair ]
+  * Update client.pp
+  * Update local.conf.erb
+
+  [ vmule ]
+  * adding params for ratelimit
+
+  [ Gabriel Baker ]
+  * Extracted imfile_template to a parameter
+
+  [ Ted Wells ]
+  * add additional check against @rsyslog_version in case rsyslog is not installed
+
+  [ Diego Abelenda ]
+  * Add unit tests for rsyslog_version = nil
+  * Fix case rsyslog_version = nil
+
+  [ earsdown ]
+  * rsyslog::snippet: replace slashes with dashes in namevar
+  * rsyslog::imfile: template now handles slashes in namevar when creating statefile
+  * rsyslog::snippet & rsyslog::imfile: now also replaces spaces in namevar
+  * imfile.erb: fix broken regular expression
+
+  [ Carlo Iannaccone ]
+  * casecmp returns a value that is always true
+
+  [ Shaun Rampersad ]
+  * Update scope for log_local_custom
+
+  [ Vadym Chepkov ]
+  * notify service if config files have been purged
+  * set default snippet content to empty string
+
+  [ Shaun Rampersad ]
+  * Added support for imjournal rate limit settings
+  * Add support for
+  * Fix missing im_journal_statefile var in init.param
+  * Wrap imjournal configs in if clause to avoid being created on systems that do not support imjournal
+
+  [ Steffen Zieger ]
+  * update travis tests
+  * really update travis tests
+  * add rsyslog version fact support for Gentoo
+  * add missing imjournal rate limit params
+
+  [ Grzegorz Ojrzanowski ]
+  * Change package_status default to present
+
+  [ Maxim Dobryakov ]
+  * Add log_filters parameters to specify if/then conditions in RSysLog configs
+  * Use false as default value instead of undef
+
+  [ Georg Heesch ]
+  * added imfiles parameter. a hash to be used with hiera to create imfiles
+
+  [ Steve Kupper ]
+  * removed trailing spaced
+
+  [ Steffen Zieger ]
+  * remove deprecated fields from metadata.json
+  * quote os names in params, fixes #190
+
+  [ John Thiltges ]
+  * Escape single-quotes in string
+
+  [ Steffen Zieger ]
+  * fix type in log_filter expression
+  * fix config path for FreeBSD in spec tests
+  * various lint changes
+  * improve testing of this module
+  * fix license name
+  * fix some rubocop issues
+  * depend on rubocop-rspec lower than 1.6
+  * require a higher ruby version for rubocop-rspec
+  * execute rubocop task only on ruby >= 2.2
+  * convert windows line endings to unix
+  * couple of rubocop changes
+  * ignore vim temp files
+  * rest of rubocop changes
+  * fix (hopefully) the last rubocop issue
+  * Release v4.0.0
+  * install json_pure <= 2.0.1 before deploying
+  * workaround for travis-ci/dpl#487 during deployment
+  * Puppet < 3.0 is not tested anymore, starting with v4.0.0
+  * fix forge password in travis yml
+  * try another time to fix forge password
+  * update puppet version requirement
+  * Release v4.0.1
+
+  [ Thomas Lapinski ]
+  * Only set im_journal_* params for Redhat 7 by default where imjournal is loaded.
+
+  [ Steffen Zieger ]
+  * handle client::log_local_custom right, fixes #220
+  * update forge password
+  * remove forge deploy branch
+  * fix some lint problems in tests/
+  * fix another lint issue in tests/
+  * new release v4.0.2
+
+  [ Brian Schonecker ]
+  * Moved the <% end -%> statement after the 'freebsd' elseif statemt to allow emergency, uucp,news.crit and local7.* configurations.
+
+  [ Steffen Zieger ]
+  * remove puppet-strings
+  * fix syntax error in params.pp
+  * fix imjournal settings spelling
+  * new release v4.0.3
+
+  [ Thomas Lapinski ]
+  * Fix conditionals in rsyslog.conf template to work with both Puppet 3 and 4.
+
+  [ Trey Dockendorf ]
+  * Use default for imjournalStateFile on EL7 that matches fresh install defaults
+
+  [ Steffen Zieger ]
+  * do not inherit from rsyslog class, refs #237
+  * fix relative class name inclusion, refs #237
+  * do not inherit rsyslog class from rsyslog::database, refs #237
+  * drop .conf extension from rsyslog::modlad, fixes #238
+
+  [ Bill Schwanitz ]
+  * rake rubocop:autoauto_correct
+
+  [ Steffen Zieger ]
+  * remove custom name for server/client config file, improve README
+  * new release v5.0.0
+
+  [ Thomas HAMEL ]
+  * Add patches for usrmsg_users support and UDPServerAddress
+
+ -- Thomas HAMEL <thomas-externe.hamel@edf.fr>  Fri, 22 Sep 2017 17:44:48 +0200
+
 puppet-module-saz-rsyslog (3.5.1-0calibre1~bpo8+1) calibre9; urgency=low
 
   * Initial release
